@@ -1,59 +1,37 @@
 import torch
 import numpy as np
 
-
 class CharRNN(torch.nn.Module):
 
-	def __init__(self, hidden_size, x_size, T = 25):
-		
-		super(CharRNN,self).__init__()
+	def __init__(self,input_size,hidden_size,output_size, n_layers = 1):
+
+		super(CharRNN, self).__init__()
+		self.input_size  = input_size
 		self.hidden_size = hidden_size
-		self.x_size      = x_size
-		self.T           = T
-		self.num_layers  = 1
-		self.lstm  = torch.nn.LSTMCell(input_size = self.x_size, hidden_size = hidden_size, bias = True)
-		self.linear = torch.nn.Linear(hidden_size, x_size)
-		self.init_weights()
+		self.n_layers    = 1
 
-	def init_weights(self):
-		self.linear.bias.data.fill_(0)
-		self.linear.weight.data.uniform_(-0.1,0.1)
+		self.x2h_i = torch.nn.Linear(input_size + hidden_size, hidden_size)
+		self.x2h_f = torch.nn.Linear(input_size + hidden_size, hidden_size)
+		self.x2h_o = torch.nn.Linear(input_size + hidden_size, hidden_size)
+		self.x2h_q = torch.nn.Linear(input_size + hidden_size, hidden_size)
+		self.h2o   = torch.nn.Linear(hidden_size, ouput_size)
 
-	def forward(self,input, h_0 = None, c_0 = None):
+		self.dropout = torch.nn.Dropout(0.1)
+		self.softmax = torch.nn.LogSoftmax()
 
-		# simple forward pass
-		# assuming input is a torch tensor		
-		# input dimensions demanded by LSTMCell is batch_size,input_size ==> 1,input_size
-		# if input == self.T : print "initialised timestep and given timestep different"
+	def forward(self,category, input, h_t, c_t):
 
-		h_t = h_0# torch.autograd.Variable(torch.zeros(1,self.hidden_size))
-		c_t = c_0# torch.autograd.Variable(torch.zeros(1,self.hidden_size))
+		combined_input = torch.cat((input,h_t),1)
+		i_t = torch.nn.Sigmoid(self.x2h_i(combined_input))
+		f_t = torch.nn.Sigmoid(self.x2h_f(combined_input))
+		o_t = torch.nn.Sigmoid(self.x2h_o(combined_input))
+		q_t = torch.nn.Tanh(self.x2h_q(combined_input))
 
-		y_t = []
-		x_t = None
+		c_t_next = f_t*c_t + i_t*q_t
+		h_t_next = o_t*torch.nn.Tanh(c_t_next)
 
-
-		for timestep in len(input):
-
-			x_t = input[timestep].view(1,len(1,x_size))
-			h_t, c_t = self.lstm(x_t, (h_t,c_t))
-			y = torch.nn.functional.softmax(self.linear(h_t))
-			y_t.append(y)
-
-		return y_t, h_t, c_t 
-
-	def sample(self, seed_x, h_0, c_0):
-
-		ixes = []
-		x_t = seed_x
-		h_t, c_t = h_0, c_0
-		for timestep in range(self.T):
-
-			h_t, c_t = self.lstm(x_t,(h_t, c_t))
-			p_t = torch.nn.functional.softmax(self.linear(h_t))
-			ix = np.random.choice(range(x_size), p = p_t.ravel())
-			x_t = torch.nn.Variable(torch.zeros(x_t.size()))
-			x_t[0,ix] = 1
-			ixes.append()
-
-		return ixes 
+		output = self.softmax(self.h2o(h_t_next))
+		return output, h_t, c_t
+		
+	def initHidden(self):
+        return Variable(torch.zeros(1, self.hidden_size))
