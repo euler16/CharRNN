@@ -13,15 +13,13 @@ argparser.add_argument('--model', type=str, default="gru")
 argparser.add_argument('--epochs', type=int, default=1000)
 argparser.add_argument('--printtime', type=int, default=5)
 argparser.add_argument('--hidden_size', type=int, default=100)
-argparser.add_argument('--n_layers', type=int, default=2)
+argparser.add_argument('--n_layers', type=int, default=1)
 argparser.add_argument('--learning_rate', type=float, default=0.01)
 argparser.add_argument('--seq_length', type=int, default=100)
 argparser.add_argument('--batch_size', type=int, default=10)
 argparser.add_argument('--cuda', default=False, action='store_true')
 args = argparser.parse_args()
 
-if args.cuda:
-    print("Using CUDA")
 
 file, file_len = read_file(args.filename)
 

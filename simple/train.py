@@ -9,10 +9,10 @@ from model import *
 # from helper import *
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument('filename', type=str,default="alice.txt" )
-argparser.add_argument('--n_epochs', type=int, default=1000)
+argparser.add_argument('filename', type=str)
+argparser.add_argument('--n_epochs', type=int, default=1500)
 argparser.add_argument('--print_every', type=int, default=5)
-argparser.add_argument('--hidden_size', type=int, default=1000)
+argparser.add_argument('--hidden_size', type=int, default=600)
 argparser.add_argument('--n_layers', type=int, default=1)
 argparser.add_argument('--learning_rate', type=float, default=0.01)
 argparser.add_argument('--seq_length', type=int, default=20)
@@ -28,6 +28,12 @@ def seq2tensor(seq,x_size):
 		tensor[i, char2idx[seq[i]]] = 1
 
 	return tensor
+
+def save_model():
+
+    save_filename = os.path.splitext(os.path.basename(args.filename))[0] + '.pt'
+    torch.save(charnet, save_filename)
+    print('saving file as %s' % save_filename)
 
 
 data = open(args.filename, 'r').read()
@@ -104,4 +110,4 @@ for i in range(args.n_epochs):
 		print txt
 		print '----------------------'
 
-print char2idx
+save_model()
