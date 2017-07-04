@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>RNN vis</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="external/jquery-2.1.3.min.js"></script>
+  <script src="external/d3.min.js"></script>
+  <script src="external/underscore-min.js"></script>
+  <script src="external/sprintf.min.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Cousine' rel='stylesheet' type='text/css'>
+
+  <style>
+  #wrap {
+    /* font-family: Courier, monospace; */
+    font-family: 'Cousine';
+    position:relative;
+    margin: 10px;
+    font-size: 20px;
+  }
+  .d {
+    display: inline-block;
+    width: 20px;
+    /* font-weight: bold; */ 
+  }
+  </style>
+
+  <script>
+
+  // visualizing RGB 3 color backgrounds
+  function toColor(lst) {
+    var r = 255-Math.floor(255 * lst[0]);
+    var g = 255-Math.floor(255 * lst[1]);
+    var b = 255-Math.floor(255 * lst[2]);
+    var s = sprintf('rgb(%d,%d,%d)', r,g,b);
+    return s;
+  }
+
+  // visualizing single thing at a time
+  function toColor2(lst) { 
+    var cca = cc % lst.length;
+    var v = Math.floor(255 * lst[cca]);
+    var r = 255;
+    var g = 255 - v;
+    var b = 255 - v;
+    var s = sprintf('rgb(%d,%d,%d)', r,g,b);
+    return s;
+  }
+
+  function toColor4(v) { 
+    v = v * 205 + 50;
+    if(v > 0) {
+      var r = 255 - v;
+      var g = 255 - v * 0.5;
+      var b = 255;
+    } else {
+      v = - v;
+      var r = 255;
+      var g = 255 - v;
+      var b = 255 - v;
+    }
+    var s = sprintf('rgb(%d,%d,%d)', r,g,b);
+    return s;
+  }
+
+  function toColor3(v) { 
+    // v is -1 to 1 initially
+    if(v > 0) {
+      var h = 200;
+      var s = "60%";
+      v = 1 - v; // invert so v = 0 is highest lightness (white)
+      var l = (Math.floor(v * 40) + 60) + '%';
+    } else {
+      var h = 0;
+      var s = "60%";
+      v = -v;
+      v = 1 - v; // invert too
+      var l = (Math.floor(v * 40) + 60) + '%';
+    }
+    var s = sprintf('hsl(%d,%s,%s)', h,s,l);
+    return s;
+  }
+
+  var showmore = false;
+
+  function render(div, data) {
+    startix = 0;
+    if(showmore) {
+      endix = data.seq.length;
+    } else {
+      endix = 4000;
+    }
+
+    div.html(''); // flush
+    for(var i=startix;i<endix;i++) {
+      var letter = data.seq[i];
+
+      //var e = data.seq[i]['s'][3][cc]; // some hidden state
+      
+      var e = data.pca[i][cc];
+      e = Math.tanh(e);
+      var cole = toColor3(e);
+
+      var css = 'background-color:' + cole;
+
+      if(letter == ' ') {
+        letter = 'a'; // ha, ha Justin trick
+        css += ';color:' + cole;
+      }
+      if(letter == '\n') {
+        css += ';display:block;'
+        //div.append('br') 
+      }
+
+      var dnew = div.append('div');
+      dnew.attr('class', 'd')
+        .attr('style', css)
+        .html(letter);
+    }
+  }
+
+  function start() {
+    $.getJSON("cell_linux_h310_l2.json", function(data) {
+      gdata = data; // store in global for debugging etc
+      render(d3.select("#vis"), gdata);
+    });
+  }
+
+  cc=0;
+  function cycle() {
+    cc += 1;
+    render(d3.select("#vis"), gdata);
+  }
+  function cycleb() {
+    cc -= 1;
+    render(d3.select("#vis"), gdata);
+  }
+  function showmorebtn() {
+    showmore = true;
+    render(d3.select("#vis"), gdata);
+  }
+  function shownextbtn() {
+    cc += 1;
+    showmore = false;
+    render(d3.select("#vis"), gdata);
+  }
+  </script>
+  </head>
+  <body onload="start();">
+    <div id="wrap">
+      <button onclick="cycleb()" style="width:100px; height:50px;">Cycle Back</button>
+      <button onclick="cycle()" style="width:100px; height:50px;">Cycle</button>
+      <button onclick="showmorebtn()" style="width:100px; height:50px;">ShowMore</button>
+      <button onclick="shownextbtn()" style="width:100px; height:50px;">ShowLessContinue</button>
+      <div id="vis">
+        hi
+      </div>
+    </div>
+  </body>
+</html>
