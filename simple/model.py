@@ -27,10 +27,8 @@ class CharRNN(torch.nn.Module):
 		self.x2h_q = torch.nn.Linear(input_size + hidden_size, hidden_size)
 		self.h2o   = torch.nn.Linear(hidden_size, output_size)
 		self.sigmoid = torch.nn.Sigmoid()
-		self.dropout = torch.nn.Dropout(0.1)
 		self.softmax = torch.nn.Softmax()
 		self.tanh    = torch.nn.Tanh()
-		self.relu    = torch.nn.ReLU()
 
 	def forward(self, input, h_t, c_t):
 
