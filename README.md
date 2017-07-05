@@ -5,7 +5,7 @@ This repository contains PyTorch code for training and visualising (through heat
 ## Recurrent Neural Networks
 Recurrent Nets are Neural Network architecure for modelling sequences. The code in the repository is about the 2 main variants of RNN :- **LSTM and GRU**. <br>
 The working of RNN can be summarized in the following gif
-<img src="assets/rnn.gif" height="40" width="40"/>
+<img src="assets/rnn.gif" height="400" width="600"/>
 
 The input to the RNN in our case is vectorized representation of characters.
 
@@ -13,6 +13,7 @@ The input to the RNN in our case is vectorized representation of characters.
 
 Create and activate a virtualenv.<br>
 > virtualenv charrnn
+
 > source charrnn/bin/activate
 
 Install [ __PyTorch__ ](https://pytorch.org)
@@ -20,6 +21,7 @@ Install [ __PyTorch__ ](https://pytorch.org)
 <br>
 Clone the repository
 > git clone https://github.com/euler16/CharRNN.git
+
 > cd CharRNN
 
 Install other dependencies<br>
