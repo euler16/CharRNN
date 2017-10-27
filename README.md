@@ -3,8 +3,8 @@
 This repository contains PyTorch code for training and visualising (through heatmaps) Recurrent Neural Networks.
 
 ## Recurrent Neural Networks
-Recurrent Nets are Neural Network architecure for modelling sequences. The code in the repository is about the 2 main variants of RNN :- **LSTM and GRU**. <br>
-The working of RNN can be summarized in the following gif
+Recurrent Nets are Neural Network architecure for modelling sequences. The code in the repository is about the 2 main variants of RNN : **LSTM and GRU**. <br>
+The working of RNN can be summarized in the following gif :-
 <img src="assets/rnn.gif" height="400" width="500"/>
 
 The input to the RNN in our case is vectorized representation of characters.
@@ -37,7 +37,7 @@ The simple folder contains code for implementing an RNN from scratch (without us
 In all three repositories run 
 > python train.py --path/to/data
 
-Check the argument parser code to know more about the arguments available
+Check the argument parser code to know more about the arguments available.
 
 ## Visualization
 
